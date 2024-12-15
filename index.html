@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT Clone with Storage</title>
+    <title>ChatGPT Clone with Enhanced Features</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -97,6 +97,13 @@
         const chatMessages = document.getElementById('chatMessages');
         const storageKey = 'chatHistory';
 
+        // Knowledge Base for predefined responses
+        const knowledgeBase = {
+            "你好": "你好！有什麼可以幫助你的嗎？",
+            "你是誰": "我是你的聊天助手，可以幫助回答你的問題。",
+            "再見": "再見！希望很快能再見到你。"
+        };
+
         // Load Chat History
         function loadChatHistory() {
             const history = JSON.parse(localStorage.getItem(storageKey)) || [];
@@ -132,9 +139,21 @@
             addMessage(userMessage, 'user');
             userInput.value = '';
 
-            // Simulate Bot Response
+            // Check Knowledge Base for Response
             setTimeout(() => {
-                const botResponse = `我聽到了你說：「${userMessage}」！這是機器人的回應。`;
+                let botResponse;
+                if (knowledgeBase[userMessage]) {
+                    botResponse = knowledgeBase[userMessage];
+                } else if (userMessage.includes("天氣")) {
+                    botResponse = "讓我幫你搜尋天氣相關資訊！稍等一下。";
+                    addMessage(botResponse, 'bot', false);
+                    setTimeout(() => {
+                        window.open(`https://www.google.com/search?q=${encodeURIComponent(userMessage)}`, '_blank');
+                    }, 1000);
+                    return;
+                } else {
+                    botResponse = `抱歉，我暫時無法回答「${userMessage}」，但我會學習更多知識來幫助你！`;
+                }
                 addMessage(botResponse, 'bot');
             }, 500);
         }
